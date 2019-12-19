@@ -2,6 +2,7 @@
 *.d
 *.vs
 
+illuminate/src/illuminate-custom
 # Compiled Object files
 *.slo
 *.lo
