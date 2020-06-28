@@ -83,10 +83,16 @@ void LedArray::deviceCommand(int device_command_index, int argc, char * *argv)
       for (int16_t led_index = 0; led_index < leds_per_pattern; led_index++)
       {
         if (debug >= 3)
-          Serial.printf("Pattern %d contains led %d %s", pattern_index, led_array_interface->getDeviceCommandLedListElement(device_command_index, pattern_index, led_index), SERIAL_LINE_ENDING);
+          Serial.printf("Pattern %d contains led %d %s", pattern_index,
+                        led_array_interface->getDeviceCommandLedListElement(
+                          device_command_index, pattern_index, led_index),
+                        SERIAL_LINE_ENDING);
 
         for (int color_channel_index = 0; color_channel_index <  led_array_interface->color_channel_count; color_channel_index++)
-          led_array_interface->setLed(led_array_interface->getDeviceCommandLedListElement(device_command_index, pattern_index, led_index), color_channel_index, led_value[color_channel_index]);
+          led_array_interface->setLed(
+            led_array_interface->getDeviceCommandLedListElement(
+              device_command_index, pattern_index, led_index),
+            color_channel_index, led_value[color_channel_index]);
       }
     }
   }
@@ -372,7 +378,7 @@ void LedArray::drawDiscoPattern()
     {
       led_index = random(0, led_array_interface->led_count);
       for (int color_channel_index = 0; color_channel_index <  led_array_interface->color_channel_count; color_channel_index++)
-        led_array_interface->setLed(led_index, color_channel_index, (uint8_t)random(0, 255));
+        led_array_interface->setLed(led_index, color_channel_index, (uint_data_t)random(0, LEDARRAY_UINT_MAX));
     }
     led_array_interface->update();
     delay(10);
@@ -392,9 +398,9 @@ void LedArray::waterDrop()
   na_period += LedArrayInterface::led_position_list_na[led_array_interface->led_count - 1][1] * LedArrayInterface::led_position_list_na[led_array_interface->led_count - 1][1];
   na_period = sqrt(na_period) / 2.0;
 
-  uint8_t value;
+  uint_data_t value;
   float na;
-  uint8_t max_led_value = 16;
+  uint_data_t max_led_value = 16;
 
   uint8_t phase_counter = 0;
   while (Serial.available() == 0)
@@ -403,8 +409,12 @@ void LedArray::waterDrop()
     led_array_interface->setLed(-1, -1, false);
     for (uint16_t led_index = 0; led_index < led_array_interface->led_count; led_index++)
     {
-      na = sqrt(LedArrayInterface::led_position_list_na[led_index][0] * LedArrayInterface::led_position_list_na[led_index][0] + LedArrayInterface::led_position_list_na[led_index][1] * LedArrayInterface::led_position_list_na[led_index][1]);
-      value = (uint8_t)round((1.0 + sin(((na / na_period) + ((float)phase_counter / 100.0)) * 2.0 * 3.14)) * max_led_value);
+      na = sqrt(
+        LedArrayInterface::led_position_list_na[led_index][0] *
+        LedArrayInterface::led_position_list_na[led_index][0] +
+        LedArrayInterface::led_position_list_na[led_index][1] *
+        LedArrayInterface::led_position_list_na[led_index][1]);
+      value = (uint_data_t)round((1.0 + sin(((na / na_period) + ((float)phase_counter / 100.0)) * 2.0 * 3.14)) * max_led_value);
       for (int color_channel_index = 0; color_channel_index <  led_array_interface->color_channel_count; color_channel_index++)
         led_array_interface->setLed(led_index, color_channel_index, value);
     }
@@ -527,12 +537,12 @@ void LedArray::drawCdpc(int argc, char * *argv)
   }
   else
   {
-    uint8_t illumination_intensity;
+    uint_data_t illumination_intensity;
 
     if (argc == 0)
       illumination_intensity = 127;
     else if (argc == 1)
-      illumination_intensity = (uint8_t)atoi(argv[0]);
+      illumination_intensity = (uint_data_t)atoi(argv[0]);
     else
     {
       Serial.printf(F("ERROR (LedArray::drawCdpc): Invalid number of arguments %s"), SERIAL_LINE_ENDING);
@@ -634,14 +644,14 @@ void LedArray::drawColorDarkfield(int argc, char * * argv)
   }
   else
   {
-    uint8_t illumination_intensity = 127;
+    uint_data_t illumination_intensity = 127;
     float start_na = objective_na;
     float end_na = objective_na + 0.2;
 
     if (argc == 0)
       ; // do nothing (use default values above)
     else if (argc >= 1)
-      illumination_intensity = (uint8_t)atoi(argv[0]);
+      illumination_intensity = (uint_data_t)atoi(argv[0]);
     else if (argc >= 2)
     {
       start_na = atof(argv[1]);
@@ -889,7 +899,7 @@ bool LedArray::waitForTriggerState(int trigger_index, bool state)
 /* A trigger test function */
 void LedArray::triggerInputTest(uint16_t channel)
 {
-  led_array_interface->setLed(-1, -1, (uint8_t)0);
+  led_array_interface->setLed(-1, -1, (uint_data_t)0);
   led_array_interface->update();
   Serial.print(LedArrayInterface::trigger_input_state[channel]); Serial.print(SERIAL_LINE_ENDING);
   Serial.print("Begin trigger input test for channel "); Serial.print(channel); Serial.print(SERIAL_LINE_ENDING);
@@ -902,8 +912,8 @@ void LedArray::triggerInputTest(uint16_t channel)
   {
     Serial.print("Failed trigger input test for channel "); Serial.print(channel); Serial.print(SERIAL_LINE_ENDING);
   }
-  led_array_interface->setLed(-1, -1, (uint8_t)0);
-  led_array_interface->setLed(0, -1, (uint8_t)255);
+  led_array_interface->setLed(-1, -1, (uint_data_t)0);
+  led_array_interface->setLed(0, -1, (uint_data_t)LEDARRAY_UINT_MAX);
   led_array_interface->update();
 }
 
@@ -983,7 +993,7 @@ void LedArray::setBrightness(int16_t argc, char ** argv)
   {
     if (strcmp(argv[0], "max") == 0)
     {
-      led_brightness = UINT8_MAX;
+      led_brightness = LEDARRAY_UINT_MAX;
     }
     else if (strcmp(argv[0], "min") == 0)
     {
@@ -991,19 +1001,20 @@ void LedArray::setBrightness(int16_t argc, char ** argv)
     }
     else if (strcmp(argv[0], "half") == 0)
     {
-      led_brightness = (uint8_t) ((float)UINT8_MAX / 2.0);
+      led_brightness = (uint_data_t) ((float)LEDARRAY_UINT_MAX / 2.0);
     }
     else if (strcmp(argv[0], "quarter") == 0)
     {
-      led_brightness = (uint8_t) ((float)UINT8_MAX / 4.0);
+      led_brightness = (uint_data_t) ((float)UINT8_MAX / 4.0);
     }
     else
-      led_brightness = (uint8_t) strtoul(argv[0], NULL, 0);
+      led_brightness = (uint_data_t) strtoul(argv[0], NULL, 0);
   }
 
   // Set LED vlaue based on color and brightness
   for (int color_channel_index = 0; color_channel_index < led_array_interface->color_channel_count; color_channel_index++)
-    led_value[color_channel_index] = (uint8_t) ceil((float) led_color[color_channel_index] / (float) UINT8_MAX * (float) led_brightness);
+    led_value[color_channel_index] =
+      (uint_data_t) ceil((float) led_color[color_channel_index] / (float) LEDARRAY_UINT_MAX * (float) led_brightness);
 
   // Print current brightness
   clearOutputBuffers();
@@ -1080,22 +1091,22 @@ void LedArray::setColor(int16_t argc, char ** argv)
       else if (strcmp(argv[0], "max") == 0)
       {
         for (int color_channel_index = 0; color_channel_index < led_array_interface->color_channel_count; color_channel_index++)
-          led_color[color_channel_index] = UINT8_MAX;
+          led_color[color_channel_index] = LEDARRAY_UINT_MAX;
       }
       else if (strcmp(argv[0], "half") == 0)
       {
         for (int color_channel_index = 0; color_channel_index < led_array_interface->color_channel_count; color_channel_index++)
-          led_color[color_channel_index] = (uint8_t) ((float)UINT8_MAX / 2);
+          led_color[color_channel_index] = (uint_data_t) ((float)LEDARRAY_UINT_MAX / 2);
       }
       else if (strcmp(argv[0], "quarter") == 0)
       {
         for (int color_channel_index = 0; color_channel_index < led_array_interface->color_channel_count; color_channel_index++)
-          led_color[color_channel_index] = (uint8_t) ((float)UINT8_MAX / 4);
+          led_color[color_channel_index] = (uint_data_t) ((float)LEDARRAY_UINT_MAX / 4);
       }
       else if (isdigit(argv[0][0]))
       {
         for (int color_channel_index = 0; color_channel_index < led_array_interface->color_channel_count; color_channel_index++)
-          led_color[color_channel_index] = (uint8_t)atoi(argv[0]);
+          led_color[color_channel_index] = (uint_data_t)atoi(argv[0]);
       }
       else
       {
@@ -1106,7 +1117,7 @@ void LedArray::setColor(int16_t argc, char ** argv)
     else if (argc == led_array_interface->color_channel_count && isdigit(argv[0][0]))
     {
       for (int color_channel_index = 0; color_channel_index < led_array_interface->color_channel_count; color_channel_index++)
-        led_color[color_channel_index] = (uint8_t)atoi(argv[color_channel_index]);
+        led_color[color_channel_index] = (uint_data_t)atoi(argv[color_channel_index]);
     }
     else
     {
@@ -1116,7 +1127,7 @@ void LedArray::setColor(int16_t argc, char ** argv)
 
     // Set LED vlaue based on color and brightness
     for (int color_channel_index = 0; color_channel_index < led_array_interface->color_channel_count; color_channel_index++)
-      led_value[color_channel_index] = (uint8_t) (((float) led_color[color_channel_index] / UINT8_MAX) * (float) led_brightness);
+      led_value[color_channel_index] = (uint_data_t) (((float) led_color[color_channel_index] / LEDARRAY_UINT_MAX) * (float) led_brightness);
 
 
     // Print current color value
@@ -1435,12 +1446,12 @@ void LedArray::setSequenceValue(uint16_t argc, void ** led_values, int16_t * led
   int16_t led_argc = led_numbers[0];
 
   // Assign LED indicies and values
-  uint8_t * values = ((uint8_t *) led_values);
+  uint_data_t * values = ((uint_data_t *) led_values);
 
   // Debug led values and numbers
   if (debug >= 2)
   {
-    for (uint8_t led_number_index = 0; led_number_index < led_numbers[0]; led_number_index++)
+    for (int16_t led_number_index = 0; led_number_index < led_numbers[0]; led_number_index++)
     {
       Serial.print(F("Found LED # "));
       Serial.print(led_numbers[led_number_index + 1]);
@@ -1622,7 +1633,9 @@ void LedArray::runSequence(uint16_t argc, char ** argv)
             led_array_interface->setLed(led_number, color_channel_index, led_value[color_channel_index]);
         else
           for (int color_channel_index = 0; color_channel_index < led_array_interface->color_channel_count; color_channel_index++)
-            led_array_interface->setLed(led_number, color_channel_index, uint8_t(round(float(led_value[color_channel_index]) * float(LedArray::led_sequence.values[pattern_index][led_idx]) / 255.0)));
+            led_array_interface->setLed(
+              led_number, color_channel_index,
+              uint_data_t(round(float(led_value[color_channel_index]) * float(LedArray::led_sequence.values[pattern_index][led_idx]) / LEDARRAY_UINT_MAX)));
       }
 
       // Check if led_count is zero - if so, clear the array
@@ -2106,7 +2119,7 @@ void LedArray::stepSequence(uint16_t argc, char ** argv)
   for (uint16_t led_idx = 0; led_idx < LedArray::led_sequence.led_counts[LedArray::pattern_index]; led_idx++)
   {
     led_number = LedArray::led_sequence.led_list[LedArray::pattern_index][led_idx];
-    
+
     if (LedArray::led_sequence.bit_depth == 1)
       for (int color_channel_index = 0; color_channel_index < led_array_interface->color_channel_count; color_channel_index++)
         led_array_interface->setLed(led_number, color_channel_index, led_value[color_channel_index]);
@@ -2605,12 +2618,13 @@ void LedArray::setup()
 
   // Define led_value and led_color
   led_brightness = LED_BRIGHTNESS_DEFAULT;
-  led_value = new uint8_t[led_array_interface->color_channel_count];
-  led_color = new uint8_t[led_array_interface->color_channel_count];
+  led_value = new uint_data_t[led_array_interface->color_channel_count];
+  led_color = new uint_data_t[led_array_interface->color_channel_count];
 
   // Populate led_color and led_value
+  // TODO: make this respect bit depth
   for (int color_channel_index = 0; color_channel_index < led_array_interface->color_channel_count; color_channel_index++)
-    led_color[color_channel_index] = (uint8_t)(round((float)UINT8_MAX / led_array_interface->color_channel_count)) ; // TODO: make this respect bit depth
+    led_color[color_channel_index] = (uint_data_t)(round((float)LEDARRAY_UINT_MAX / led_array_interface->color_channel_count)) ;
 
   // Reset sequence
   LedArray::led_sequence.deallocate();
@@ -2722,8 +2736,8 @@ void LedArray::demo()
 
     for ( int16_t led_index = 0; led_index < led_array_interface->led_count; led_index++)
     {
-      led_array_interface->setLed(-1, -1, (uint8_t)0);
-      led_array_interface->setLed(led_index, -1, (uint8_t)127);
+      led_array_interface->setLed(-1, -1, (uint_data_t)0);
+      led_array_interface->setLed(led_index, -1, (uint_data_t)(LEDARRAY_UINT_MAX/2));
       led_array_interface->update();
       delay(1);
 
@@ -2739,8 +2753,8 @@ void LedArray::demo()
 
     for ( int16_t led_index = led_array_interface->led_count - 1; led_index >= 0; led_index--)
     {
-      led_array_interface->setLed(-1, -1, (uint8_t)0);
-      led_array_interface->setLed(led_index, -1, (uint8_t)127);
+      led_array_interface->setLed(-1, -1, (uint_data_t)0);
+      led_array_interface->setLed(led_index, -1, (uint_data_t)(LEDARRAY_UINT_MAX/2));
       led_array_interface->update();
       delay(1);
 

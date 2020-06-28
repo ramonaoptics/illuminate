@@ -67,12 +67,20 @@
 // Bit depth to use
 #define USE_8_BIT_VALUES 1
 
+#if USE_8_BIT_VALUES == 1
+#define LEDARRAY_UINT_MAX UINT8_MAX
+typedef uint8_t uint_data_t;
+#else
+#define LEDARRAY_UINT_MAX UINT16_MAX
+typedef uint16_t uint_data_t;
+#endif
+
 class LedArray {
   public:
 
       // LED array control object
     LedArrayInterface * led_array_interface;
-    
+
     // Device setup and demo
     void reset();   // Reset the Array
     void demo();    // Run a demo which tests the functions below
@@ -199,7 +207,7 @@ class LedArray {
     const char * DPC_BOTTOM2 = "bottom";
 
     // Defualt brightness
-    const uint8_t LED_VALUE_DEFAULT = 10;
+    const uint_data_t LED_VALUE_DEFAULT = 10;
 
     // LED sequence object for storage and retreival
     static LedSequence led_sequence;
@@ -226,9 +234,9 @@ class LedArray {
     static const int * trigger_input_pin_list;
 
     // Default illumination
-    uint8_t * led_value; // Current led values for each channel
-    uint8_t * led_color;          // 8-bit color balance
-    uint8_t led_brightness = 10;  // 8-bit brightness
+    uint_data_t * led_value; // Current led values for each channel
+    uint_data_t * led_color;          // 8-bit color balance
+    uint_data_t led_brightness = 10;  // 8-bit brightness
 
     // Sequence stepping index
     uint16_t sequence_number_displayed = 0;
