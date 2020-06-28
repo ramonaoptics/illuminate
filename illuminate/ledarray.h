@@ -65,15 +65,15 @@
 #define MAX_RESPONSE_LENGTH_LONG 100
 
 // Bit depth to use
-#define USE_8_BIT_VALUES 1
+#ifndef LEDARRAY_INTERFACE_BITDEPTH
+#define LEDARRAY_INTERFACE_BITDEPTH 8
+#endif
 
-#if USE_8_BIT_VALUES == 1
+#if LEDARRAY_INTERFACE_BITDEPTH == 8
 #define LEDARRAY_UINT_MAX UINT8_MAX
-#define LEDARRAY_BITDEPTH 8
 typedef uint8_t uint_data_t;
 #else
 #define LEDARRAY_UINT_MAX UINT16_MAX
-#define LEDARRAY_BITDEPTH 16
 typedef uint16_t uint_data_t;
 #endif
 

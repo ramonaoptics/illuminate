@@ -199,8 +199,10 @@ void LedArray::printCurrentLedValues(uint16_t argc, char * *argv)
     {
       if (led_array_interface->bit_depth == 16)
       {
-        if (USE_8_BIT_VALUES)
-          Serial.printf(F("%u"), (uint8_t) round(255.0 * ((float)led_array_interface->getLedValue(led_number, color_channel_index) / 65535.0)));
+        if (LEDARRAY_INTERFACE_BITDEPTH == 8)
+          Serial.printf(F("%u"), (uint8_t) round(LEDARRAY_UINT_MAX * ((float)led_array_interface->getLedValue(led_number, color_channel_index) / 65535.0)));
+        if (LEDARRAY_INTERFACE_BITDEPTH == 16)
+          Serial.printf(F("%u"), ((float)led_array_interface->getLedValue(led_number, color_channel_index)));
         else
           Serial.printf(F("%lu"), led_array_interface->getLedValue(led_number, color_channel_index));
       }
@@ -283,7 +285,7 @@ void LedArray::printSystemParams()
   Serial.print(F(",\n    \"trigger_output_count\" : "));
   Serial.print(led_array_interface->trigger_output_count);
   Serial.print(F(",\n    \"interface_bit_depth\" : "));
-  Serial.print(LEDARRAY_BITDEPTH);
+  Serial.print(LEDARRAY_INTERFACE_BITDEPTH);
   Serial.print(F(",\n    \"bit_depth\" : "));
   Serial.print(led_array_interface->bit_depth);
   Serial.print(F(",\n    \"serial_number\" : "));
