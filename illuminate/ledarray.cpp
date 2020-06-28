@@ -282,6 +282,8 @@ void LedArray::printSystemParams()
   Serial.print(led_array_interface->trigger_input_count);
   Serial.print(F(",\n    \"trigger_output_count\" : "));
   Serial.print(led_array_interface->trigger_output_count);
+  Serial.print(F(",\n    \"interface_bit_depth\" : "));
+  Serial.print(LEDARRAY_BITDEPTH);
   Serial.print(F(",\n    \"bit_depth\" : "));
   Serial.print(led_array_interface->bit_depth);
   Serial.print(F(",\n    \"serial_number\" : "));
