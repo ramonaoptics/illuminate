@@ -288,7 +288,9 @@ void LedArray::printSystemParams()
   printMacAddress();
   Serial.print(F("\""));
   Serial.print(F(",\n    \"interface_version\" : "));
+  Serial.print(F("\""));
   Serial.print(VERSION);
+  Serial.print(F("\""));
 
   // Terminate JSON
   Serial.printf("\n}", SERIAL_LINE_ENDING);
