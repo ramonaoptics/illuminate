@@ -1064,27 +1064,27 @@ void LedArray::setColor(int16_t argc, char ** argv)
       }
       else if (strcmp(argv[0], "redmax") == 0 && led_array_interface->color_channel_count == 3)
       {
-        led_color[0] = UINT8_MAX;
+        led_color[0] = LEDARRAY_UINT_MAX;
         led_color[1] = 0;
         led_color[2] = 0;
       }
       else if (strcmp(argv[0], "greenmax") == 0 && led_array_interface->color_channel_count == 3)
       {
         led_color[0] = 0;
-        led_color[1] = UINT8_MAX;
+        led_color[1] = LEDARRAY_UINT_MAX;
         led_color[2] = 0;
       }
       else if (strcmp(argv[0], "bluemax") == 0 && led_array_interface->color_channel_count == 3)
       {
         led_color[0] = 0;
         led_color[1] = 0;
-        led_color[2] = UINT8_MAX;
+        led_color[2] = LEDARRAY_UINT_MAX;
       }
       else if (strcmp(argv[0], "whitemax") == 0 && led_array_interface->color_channel_count == 3)
       {
-        led_color[0] = UINT8_MAX;
-        led_color[1] = UINT8_MAX;
-        led_color[2] = UINT8_MAX;
+        led_color[0] = LEDARRAY_UINT_MAX;
+        led_color[1] = LEDARRAY_UINT_MAX;
+        led_color[2] = LEDARRAY_UINT_MAX;
       }
       else if ((strcmp(argv[0], "all") == 0) || (strcmp(argv[0], "white") == 0))
       {
@@ -1110,7 +1110,7 @@ void LedArray::setColor(int16_t argc, char ** argv)
       else if (isdigit(argv[0][0]))
       {
         for (int color_channel_index = 0; color_channel_index < led_array_interface->color_channel_count; color_channel_index++)
-          led_color[color_channel_index] = (uint_data_t)atoi(argv[0]);
+          led_color[color_channel_index] = (uint_data_t) strtoul(argv[0], NULL, 0);
       }
       else
       {
@@ -1121,7 +1121,7 @@ void LedArray::setColor(int16_t argc, char ** argv)
     else if (argc == led_array_interface->color_channel_count && isdigit(argv[0][0]))
     {
       for (int color_channel_index = 0; color_channel_index < led_array_interface->color_channel_count; color_channel_index++)
-        led_color[color_channel_index] = (uint_data_t)atoi(argv[color_channel_index]);
+        led_color[color_channel_index] = (uint_data_t)strtoul(argv[color_channel_index], NULL, 0);
     }
     else
     {
@@ -2677,7 +2677,7 @@ void LedArray::demo()
       for (int color_channel_index = 0; color_channel_index < led_array_interface->color_channel_count; color_channel_index++)
         led_value[color_channel_index] = 0;
 
-      led_value[color_channel_index_outer] = 64;
+      led_value[color_channel_index_outer] = 64 * LEDARRAY_UINT_MAX / UINT8_MAX;
       led_array_interface->clear();
       drawCircle(0, objective_na);
       led_array_interface->update();
@@ -2698,7 +2698,7 @@ void LedArray::demo()
       for (int color_channel_index = 0; color_channel_index < led_array_interface->color_channel_count; color_channel_index++)
         led_value[color_channel_index] = 0;
 
-      led_value[color_channel_index_outer] = 64;
+      led_value[color_channel_index_outer] = 64 * LEDARRAY_UINT_MAX / UINT8_MAX;
       led_array_interface->clear();
       drawCircle(objective_na, objective_na + 0.2);
       led_array_interface->update();
@@ -2721,7 +2721,7 @@ void LedArray::demo()
         for (int color_channel_index = 0; color_channel_index < led_array_interface->color_channel_count; color_channel_index++)
           led_value[color_channel_index] = 0;
 
-        led_value[color_channel_index_outer] = 127;
+        led_value[color_channel_index_outer] = 127 * LEDARRAY_UINT_MAX / UINT8_MAX;
         led_array_interface->clear();
         drawHalfCircle(dpc_index, 0, objective_na);
         led_array_interface->update();

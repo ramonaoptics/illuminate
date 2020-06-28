@@ -222,7 +222,7 @@ class LedArray {
     float led_array_distance_z = 60.0;
     int color_channel_count = 3;
     char * device_name;
-    int8_t default_brightness = 63;
+    uint32_t default_brightness = 63 * LEDARRAY_UINT_MAX / UINT8_MAX;
 
     // Trigger Input (feedback) Settings
     static volatile float trigger_feedback_timeout_ms;
@@ -238,7 +238,7 @@ class LedArray {
     // Default illumination
     uint_data_t * led_value; // Current led values for each channel
     uint_data_t * led_color;          // 8-bit color balance
-    uint_data_t led_brightness = 10;  // 8-bit brightness
+    uint_data_t led_brightness = 10 * LEDARRAY_UINT_MAX / UINT8_MAX;  // 8-bit brightness
 
     // Sequence stepping index
     uint16_t sequence_number_displayed = 0;
